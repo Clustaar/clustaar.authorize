@@ -23,10 +23,10 @@ class Ability(object):
         Returns:
             None
         """
-        if not self.can(action, **kwargs):
+        if not self.can(action, *args, **kwargs):
             raise self._authorizations.generate_error(action, kwargs)
 
-    def can(self, action, **kwargs):
+    def can(self, action, *args, **kwargs):
         """
         Returns if current ability allows action to be executed
 
@@ -37,7 +37,7 @@ class Ability(object):
             bool: True if allowed, false otherwise
         """
         access = self._get_action_access(action)
-        return access(**kwargs)
+        return access(*args, **kwargs)
 
     def _get_action_access(self, action):
         """
