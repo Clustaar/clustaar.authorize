@@ -1,8 +1,11 @@
 from .conditions import FalseCondition, TrueCondition
-from .context import Context
 
 
 class AccessRule(object):
+    """A rule is composed of a resolver and a condition.
+    The resolvers are executed first is order to provide the data objects
+    required by the condition.
+    """
     def __init__(self, resolvers=(), condition=FalseCondition()):
         """
         Args:
@@ -12,16 +15,15 @@ class AccessRule(object):
         self._resolvers = resolvers
         self._condition = condition
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, context):
         """Returns whether or not if rules allows action
 
         Args:
-            params (dict): params received
+            context (Context): a context
 
         Returns:
             bool
         """
-        context = Context(args=args, kwargs=kwargs)
         for resolver in self._resolvers:
             resolver(context)
 
@@ -38,3 +40,7 @@ class Allow(AccessRule):
     """Condition that always allows access"""
     def __init__(self):
         super().__init__(condition=TrueCondition())
+
+
+ALLOW = Allow()
+DENY = Deny()

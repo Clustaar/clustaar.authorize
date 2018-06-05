@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 from clustaar.authorize.rules import AccessRule
+from clustaar.authorize.context import Context
 import pytest
 
 
@@ -28,9 +29,11 @@ def rule(resolver, condition):
 
 class TestCall(object):
     def test_sends_context_to_condition(self, rule, user, condition):
-        rule({"user_id": 1})
+        context = Context(kwargs={"user_id": 1})
+        rule(context)
         context = condition.call_args_list[0][0][0]
         assert context["user"] == user
 
     def test_returns_value_from_condition(self, rule):
-        assert not rule({})
+        context = Context()
+        assert not rule(context)

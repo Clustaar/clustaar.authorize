@@ -17,25 +17,39 @@ It can be used with **Falcon**, just use the `@authorize` decorator and be sure 
 
 ```python
 from clustaar.authorize import Action, Ability, Authorizations
+from clustaar.authorize.rules import ALLOW, DENY, AccessRule
+from clustaar.authorize.conditions import Condition
+
+create_action = Action(name="create_project")
+view_action = Action(name="view_project")
+
+
+class KwargEquals(Condition):
+    """This conditions validate that a kwarg value equals a expected one."""
+    def __init__(self, name, expected):
+        self._name = name
+        self._expected = expected
+
+    def __call__(self, context):
+        return context.get(self._name) == self._expected
+
 
 class AdminAuthorizations(Authorizations):
     def __init__(self):
         # Admins can do whatever they want
-        super().__init__(default_action="allow")
+        super().__init__(default_rule=ALLOW)
 
 class UserAuthorizations(Authorizations):
-    def can_create_project(self):
-        # Users can't create a project
-        return False
-
-    def can_view_project(self, id):
-        # Users can only see project with ID = 1
-        return id == "1"
+    def __init__(self):
+        rules = {
+            create_action: DENY,
+            view_action: AccessRule(condition=KwargEquals("id", "1"))
+        }
+        super().__init__(rules=rules,
+                         default_rule=DENY)
 
 user_ability = Ability(UserAuthorizations())
 admin_ability = Ability(AdminAuthorizations())
-create_action = Action(name="create_project")
-view_action = Action(name="view_project")
 ```
 
 #### Using authorizations

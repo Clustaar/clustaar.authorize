@@ -1,23 +1,17 @@
 from .rules import Deny
+from .context import Context
 
 
 class Authorizations(object):
-    """
-    Authorizations base class.
-    Developper must inherit this class to create its own rules.
-
-    Example:
-        class AdminAuthorizations(Authorizations):
-            def can_view_project(self, project_id):
-                return True
-    """
-    def __init__(self, rules, default_rule=Deny()):
+    """Authorizations base class.
+    Developper must inherit this class to create its own rules."""
+    def __init__(self, rules=None, default_rule=Deny()):
         """
         Args:
             rules (dict<Action, Rule>):
             default_rule (Rule): default action taken if access method is not defined
         """
-        self.rules = rules
+        self.rules = rules or {}
         self._default_rule = default_rule
 
     def generate_error(self, rule, kwargs):
@@ -40,7 +34,8 @@ class Authorizations(object):
             bool
         """
         rule = self.rules.get(action, self._default_rule)
-        return rule(*args, **kwargs)
+        context = self._get_context(*args, **kwargs)
+        return rule(context)
 
     def extend(self, rules):
         """Add/Override existing rules in current authorizations
@@ -49,3 +44,11 @@ class Authorizations(object):
             rules (dict<Action, Rule>): new rules
         """
         self.rules.update(rules)
+
+    def _get_context(self, *args, **kwargs):
+        """Template method for creating the context evalued by rules
+
+        Returns:
+            Context
+        """
+        return Context(args=args, kwargs=kwargs)
