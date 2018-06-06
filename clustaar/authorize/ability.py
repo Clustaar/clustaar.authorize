@@ -27,28 +27,12 @@ class Ability(object):
             raise self._authorizations.generate_error(action, kwargs)
 
     def can(self, action, *args, **kwargs):
-        """
-        Returns if current ability allows action to be executed
+        """ Returns if current ability allows action to be executed
 
         Args:
             action (Action): action to validate access
-            kwargs (dict): arguments passed to the access method associated to `action`
+
         Returns:
             bool: True if allowed, false otherwise
         """
-        access = self._get_action_access(action)
-        return access(*args, **kwargs)
-
-    def _get_action_access(self, action):
-        """
-        Returns the access method associated to `action`, the one giving access or
-        not to the action associated with `action`.
-
-        Args:
-            action (Action): action to validate access
-
-        Returns:
-            function: the access method
-        """
-        method_name = "can_" + action.name
-        return getattr(self._authorizations, method_name)
+        return self._authorizations.can(action, *args, **kwargs)

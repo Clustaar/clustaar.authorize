@@ -8,7 +8,7 @@ class AuthorizationsMock(Authorizations):
     def __init__(self, allowed):
         self._allowed = allowed
 
-    def can_list_projects(self, *args, **kwargs):
+    def can(self, action, *args, **kwargs):
         return self._allowed
 
 

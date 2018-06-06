@@ -1,22 +1,18 @@
-class Authorizations(object):
-    _default_action = "deny"
-    """
-    Authorizations base class.
-    Developper must inherit this class to create its own rules.
+from .rules import Deny
+from .context import Context
 
-    Example:
-        class AdminAuthorizations(Authorizations):
-            def can_view_project(self, project_id):
-                return True
-    """
-    def __init__(self, default_action="deny"):
+
+class Authorizations(object):
+    """Authorizations base class.
+    Developper must inherit this class to create its own rules."""
+    def __init__(self, rules=None, default_rule=Deny()):
         """
         Args:
-            default_action (str): default action taken if access method is not defined (allow or deny)
+            rules (dict<Action, Rule>):
+            default_rule (Rule): default action taken if access method is not defined
         """
-        if default_action not in ("deny", "allow"):
-            raise ValueError("'{0}' is not a valid action, 'deny' and 'allow' are.".format(default_action))
-        self._default_action = default_action
+        self.rules = rules or {}
+        self._default_rule = default_rule
 
     def generate_error(self, rule, kwargs):
         """ Build an error when access defined by rule is not granted
@@ -28,25 +24,31 @@ class Authorizations(object):
         """
         return Exception("Access denied for {0} ({1})".format(rule.name, kwargs))
 
-    def __getattr__(self, name):
-        """
-        Returns the default action for every undefined 'rule' methods (the one beginning with 'can_*').
-        If `name` does not match the rule method name pattern it calls super()
+    def can(self, action, *args, **kwargs):
+        """Returns True if authorized to make action else False
+
         Args:
-            name (str): attribute name
+            action (Action)
 
         Returns:
-            function: default action
-        Raises:
-            AttributeError: if not accessing a 'rule' method
+            bool
         """
-        if name.startswith("can_"):
-            return self._deny if self._default_action == "deny" else self._allow
-        else:
-            super().__getattr__(name)
+        rule = self.rules.get(action, self._default_rule)
+        context = self._get_context(*args, **kwargs)
+        return rule(context)
 
-    def _deny(self, *args, **kwargs):
-        return False
+    def extend(self, rules):
+        """Add/Override existing rules in current authorizations
 
-    def _allow(self, *args, **kwargs):
-        return True
+        Args:
+            rules (dict<Action, Rule>): new rules
+        """
+        self.rules.update(rules)
+
+    def _get_context(self, *args, **kwargs):
+        """Template method for creating the context evalued by rules
+
+        Returns:
+            Context
+        """
+        return Context(args=args, kwargs=kwargs)

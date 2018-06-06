@@ -1,36 +1,46 @@
 from clustaar.authorize import Authorizations, Action
+from clustaar.authorize.rules import Deny, Allow
 import pytest
 
 
 @pytest.fixture
-def authorizations():
-    return Authorizations(default_action="deny")
+def authorizations(view_project):
+    return Authorizations(
+        rules={
+            view_project: Allow()
+        },
+        default_rule=Deny()
+    )
 
 
 @pytest.fixture
-def action():
+def view_project():
     return Action(name="view_project")
 
-class TestConstructor(object):
-    def test_raises_exception_if_invalid_default_action(self):
-        with pytest.raises(ValueError) as exc:
-            Authorizations(default_action="invalid")
 
-        assert str(exc.value) == "'invalid' is not a valid action, 'deny' and 'allow' are."
 class TestGenerateError(object):
-    def test_returns_an_exception(self, authorizations, action):
-        exception = authorizations.generate_error(action, {})
+    def test_returns_an_exception(self, authorizations, view_project):
+        exception = authorizations.generate_error(view_project, {})
         assert str(exception) == "Access denied for view_project ({})"
 
 
-class TestDefaultGetAttr(object):
-    def test_returns_false_if_default_action_is_deny(self, authorizations):
-        assert not authorizations.can_view_project()
+class TestCan(object):
+    def test_returns_false_if_default_view_project_is_deny(self, authorizations):
+        action = Action(name="other")
+        assert not authorizations.can(action, {})
 
-    def test_returns_true_if_default_action_is_allow(self):
-        authorizations = Authorizations(default_action="allow")
-        assert authorizations.can_view_project()
+    def test_returns_true_if_default_view_project_is_allow(self, view_project):
+        action = Action(name="other")
+        authorizations = Authorizations({}, default_rule=Allow())
+        assert authorizations.can(action, {})
 
-    def test_raises_exception_if_not_a_can_method(self, authorizations):
-        with pytest.raises(AttributeError):
-            authorizations.say_hello()
+    def test_returns_rule_result_if_action_rule_is_set(self, authorizations, view_project):
+        assert authorizations.can(view_project, {})
+
+
+class TestExtend(object):
+    def test_override_existing_rule(self, authorizations, view_project):
+        authorizations.extend({
+            view_project: Deny()
+        })
+        assert not authorizations.can(view_project, {})

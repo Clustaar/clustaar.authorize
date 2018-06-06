@@ -13,7 +13,7 @@ def authorize(action):
     """
     def decorator(function):
         def wrapper(handler, request, response, *args, **kwargs):
-            request.context.ability.authorize(action, *args, **kwargs)
+            request.context.ability.authorize(action, request=request, *args, **kwargs)
             function(handler, request, response, *args, **kwargs)
         return wrapper
     return decorator
