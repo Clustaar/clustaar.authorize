@@ -1,13 +1,6 @@
-==================
-clustaar.authorize
-==================
+# clustaar.authorize
 
-
-Add a short description here!
-
------------
-Description
------------
+## Description
 
 A micro authorization system.
 
@@ -15,12 +8,9 @@ Definition of the access rules is up to you as it's too much specific of a proje
 
 It can be used with **Falcon**, just use the `@authorize` decorator and be sure to provide an `ability` property on the request context.
 
---------
-Examples
---------
-
-Creating authorizations
-=======================
+## Examples
+### Usage
+#### Creating authorizations
 
 ```python
 from clustaar.authorize import Action, Ability, Authorizations
@@ -59,8 +49,7 @@ user_ability = Ability(UserAuthorizations())
 admin_ability = Ability(AdminAuthorizations())
 ```
 
-Using authorizations
-====================
+#### Using authorizations
 
 ```python
 admin_ability.can(view_action, id="1")  # => True
@@ -75,8 +64,7 @@ user_ability.authorize(view_action, id="1")  # => No exception raised
 user_ability.authorize(create_action)  # => Raises an Exception : Access denied for create_project ({})
 ```
 
-Falcon
-======
+#### Falcon
 
 ```python
 import falcon
@@ -112,8 +100,3 @@ app = falcon.API(middlewares=(AbilityInjectionMiddleware(),))
 app.add_route("/projects", ProjectsHandler())
 app.add_route("/projects/{id}", ProjectHandler())
 ```
-Note
-====
-
-This project has been set up using PyScaffold 3.1. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
