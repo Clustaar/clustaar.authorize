@@ -7,6 +7,7 @@ class Context(dict):
         and finally store the user into the context in order to let him be accessible
         in the condition
     """
+
     def __init__(self, args=(), kwargs=None):
         """
         Args:

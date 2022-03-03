@@ -5,6 +5,7 @@ class AndCondition(object):
     """Represents an & combination of conditions.
     It returns True when all conditions returns True
     """
+
     def __init__(self, conditions):
         """
         Args:
@@ -37,6 +38,7 @@ class OrCondition(object):
     """Represents an | combination of conditions.
     It returns True when at least one condition returns True
     """
+
     def __init__(self, conditions):
         """
         Args:

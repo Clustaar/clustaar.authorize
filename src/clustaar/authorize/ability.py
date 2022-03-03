@@ -27,7 +27,7 @@ class Ability(object):
             raise self._authorizations.generate_error(action, kwargs)
 
     def can(self, action, *args, **kwargs):
-        """ Returns if current ability allows action to be executed
+        """Returns if current ability allows action to be executed
 
         Args:
             action (Action): action to validate access

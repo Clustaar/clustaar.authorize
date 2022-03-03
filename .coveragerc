@@ -3,8 +3,11 @@
 branch = True
 source = authorize
 # omit = bad_file.py
-omit =
-    clustaar/authorize/__init__.py
+
+[paths]
+source =
+    src/
+    */site-packages/
 
 [report]
 # Regexes for lines to exclude from consideration

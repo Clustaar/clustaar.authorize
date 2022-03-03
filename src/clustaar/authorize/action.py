@@ -2,6 +2,7 @@ class Action(object):
     """
     Represents an action that `Ability` can allow or forbid access to.
     """
+
     def __init__(self, name):
         """
         Args:

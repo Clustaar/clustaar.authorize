@@ -13,7 +13,7 @@ class AuthorizationsMock(Authorizations):
 
 
 @pytest.fixture
-def request():
+def request_():
     return Mock()
 
 
@@ -28,23 +28,23 @@ def callback():
 
 
 class TestDecorator(object):
-    def test_raises_exception_if_not_authorized(self, request, action, callback):
-        request.context.ability = Ability(AuthorizationsMock(False))
+    def test_raises_exception_if_not_authorized(self, request_, action, callback):
+        request_.context.ability = Ability(AuthorizationsMock(False))
 
         def on_get(handler, req, resp, callback):
             callback()
 
         with pytest.raises(Exception):
-            authorize(action)(on_get)(None, request, None, callback)
+            authorize(action)(on_get)(None, request_, None, callback)
 
         assert callback.call_count == 0
 
-    def test_calls_handler_if_authorized(self, request, action, callback):
-        request.context.ability = Ability(AuthorizationsMock(True))
+    def test_calls_handler_if_authorized(self, request_, action, callback):
+        request_.context.ability = Ability(AuthorizationsMock(True))
 
         def on_get(handler, req, resp, callback):
             callback()
 
-        authorize(action)(on_get)(None, request, None, callback)
+        authorize(action)(on_get)(None, request_, None, callback)
 
         callback.assert_called_once_with()
