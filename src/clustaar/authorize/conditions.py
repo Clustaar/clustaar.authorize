@@ -4,6 +4,7 @@ from . import conditions_combinations as combinations
 
 class Condition(ABC):
     """Base interface of conditions"""
+
     @abstractmethod
     def __call__(self, context):
         """Execute condition
@@ -54,11 +55,13 @@ class StaticCondition(Condition):
 
 class FalseCondition(StaticCondition):
     """Condition that always return False"""
+
     def __init__(self):
         super().__init__(False)
 
 
 class TrueCondition(StaticCondition):
     """Condition that always return True"""
+
     def __init__(self):
         super().__init__(True)

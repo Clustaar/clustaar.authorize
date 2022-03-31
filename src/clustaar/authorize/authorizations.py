@@ -5,6 +5,7 @@ from .context import Context
 class Authorizations(object):
     """Authorizations base class.
     Developper must inherit this class to create its own rules."""
+
     def __init__(self, rules=None, default_rule=Deny()):
         """
         Args:
@@ -15,7 +16,7 @@ class Authorizations(object):
         self._default_rule = default_rule
 
     def generate_error(self, rule, kwargs):
-        """ Build an error when access defined by rule is not granted
+        """Build an error when access defined by rule is not granted
         Args:
             rule (Rule): an access rule
             kwargs (dict): args received when asking for authorization

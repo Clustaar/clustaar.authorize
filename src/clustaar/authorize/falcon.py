@@ -11,9 +11,12 @@ def authorize(action):
         def on_get(self, request, response, project_id):
             pass
     """
+
     def decorator(function):
         def wrapper(handler, request, response, *args, **kwargs):
             request.context.ability.authorize(action, request=request, *args, **kwargs)
             function(handler, request, response, *args, **kwargs)
+
         return wrapper
+
     return decorator

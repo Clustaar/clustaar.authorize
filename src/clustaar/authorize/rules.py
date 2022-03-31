@@ -6,6 +6,7 @@ class AccessRule(object):
     The resolvers are executed first is order to provide the data objects
     required by the condition.
     """
+
     def __init__(self, resolvers=(), condition=FalseCondition()):
         """
         Args:
@@ -32,12 +33,14 @@ class AccessRule(object):
 
 class Deny(AccessRule):
     """Condition that always deny access"""
+
     def __init__(self):
         super().__init__(condition=FalseCondition())
 
 
 class Allow(AccessRule):
     """Condition that always allows access"""
+
     def __init__(self):
         super().__init__(condition=TrueCondition())
 
